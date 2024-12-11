@@ -23,10 +23,12 @@ class DBClient {
   }
 
   nbUsers() {
+    if (!this.isAlive()) return 0;
     return this.db.then((db) => db.collection('users').countDocuments());
   }
 
   nbFiles() {
+    if (!this.isAlive()) return 0;
     return this.db.then((db) => db.collection('files').countDocuments());
   }
 }
