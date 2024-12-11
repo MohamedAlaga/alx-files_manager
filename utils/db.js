@@ -1,4 +1,4 @@
-import mongo from 'mongodb';
+const mongo = require('mongodb');
 
 class DBClient {
   constructor() {
