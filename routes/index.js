@@ -5,8 +5,12 @@ const router = express.Router();
 
 const routeController = (app) => {
   app.use('/', router);
-  router.get('/status', AppController.getStatus);
-  router.get('/stats', AppController.getStats);
+  router.get('/status', (req, res) => {
+    AppController.getStatus(req, res);
+  });
+  router.get('/stats', (req, res) => {
+    AppController.getStats(req, res);
+  });
 };
 
 export default routeController;
