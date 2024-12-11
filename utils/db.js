@@ -1,25 +1,33 @@
-const mongo = require("mongodb");
+import mongo from 'mongodb';
 
 class DBClient {
   constructor() {
-    this.host = process.env.DB_HOST || "localhost";
+    this.host = process.env.DB_HOST || 'mongodb://localhost';
     this.port = process.env.DB_PORT || 27017;
+    this.isconnected = false;
     this.db = mongo.MongoClient.connect(`${this.host}:${this.port}`, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    }).then((client) => client.db(process.env.DB_DATABASE || "files_manager"));
+    })
+      .then((client) => {
+        this.isconnected = true;
+        return client.db(process.env.DB_DATABASE || 'files_manager');
+      })
+      .catch(() => {
+        this.isconnected = false;
+      });
   }
 
-  isAlive() {
-    return this.db.then((db) => db.command({ ping: 1 }).then(() => true));
+  async isAlive() {
+    return this.isconnected;
   }
 
   nbUsers() {
-    return this.db.then((db) => db.collection("users").countDocuments());
+    return this.db.then((db) => db.collection('users').countDocuments());
   }
 
   nbFiles() {
-    return this.db.then((db) => db.collection("files").countDocuments());
+    return this.db.then((db) => db.collection('files').countDocuments());
   }
 }
 
