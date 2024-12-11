@@ -18,7 +18,7 @@ class DBClient {
       });
   }
 
-  async isAlive() {
+  isAlive() {
     return this.isconnected;
   }
 
