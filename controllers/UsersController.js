@@ -1,6 +1,9 @@
 /* eslint-disable consistent-return */
+import { ObjectId } from 'mongodb';
+
 import sha1 from 'sha1';
 import dbClient from '../utils/db';
+import redisClient from '../utils/redis';
 
 class UsersController {
   static async postNew(request, response) {
@@ -26,6 +29,22 @@ class UsersController {
           files: await dbClient.nbFiles(),
           users: await dbClient.nbUsers(),
         });
+    }
+  }
+
+  static async getMe(req, res) {
+    try {
+      const userToken = req.header('X-Token');
+      const authKey = `auth_${userToken}`;
+      const userID = await redisClient.get(authKey);
+      if (!userID) {
+        res.status(401).json({ error: 'Unauthorized' });
+      }
+      const user = await dbClient.db.collection('users').findOne({ _id: ObjectId(userID) });
+      res.json({ id: user._id, email: user.email });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: `Server error :${error}` });
     }
   }
 }
